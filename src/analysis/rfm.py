@@ -47,7 +47,8 @@ def load_qualifying_orders(source_dir=PROCESSED):
     return result[["order_id", "customer_unique_id", "purchase_date"]]
 
 
-def calculate_rfm(orders, source_dir=PROCESSED):
+def load_order_spend(orders, source_dir=PROCESSED):
+    """Return merchandise value in cents for each qualifying order."""
     items = read_columns("order_items", ["order_id", "price"], source_dir)
     items = items.loc[items["order_id"].isin(orders["order_id"])].copy()
     if not items["price"].str.fullmatch(r"[0-9]+\.[0-9]{2}").all():
@@ -57,7 +58,11 @@ def calculate_rfm(orders, source_dir=PROCESSED):
     order_spend = items.groupby("order_id")["monetary_cents"].sum()
     if not orders["order_id"].isin(order_spend.index).all():
         raise ValueError("Each qualifying order must have at least one priced item.")
-    purchases = orders.join(order_spend, on="order_id", validate="one_to_one")
+    return order_spend
+
+
+def calculate_rfm(orders, source_dir=PROCESSED):
+    purchases = orders.join(load_order_spend(orders, source_dir), on="order_id", validate="one_to_one")
     reference_date = purchases["purchase_date"].max() + pd.Timedelta(days=1)
     result = purchases.groupby("customer_unique_id", as_index=False).agg(
         last_purchase_date=("purchase_date", "max"),
