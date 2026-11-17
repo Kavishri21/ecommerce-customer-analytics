@@ -53,16 +53,16 @@ RELATIONSHIPS = (
 )
 
 
-def load_datasets(**read_csv_options):
+def load_datasets(source_dir=RAW_DIR, **read_csv_options):
     missing = [filename for filename, _, _ in DATASETS.values()
-               if not (RAW_DIR / filename).is_file()]
+               if not (source_dir / filename).is_file()]
     if missing:
-        raise SystemExit("Missing CSV files in data/raw/: " + ", ".join(missing))
+        raise SystemExit(f"Missing CSV files in {source_dir}: " + ", ".join(missing))
 
     frames = {}
     for name, (filename, _, _) in DATASETS.items():
         try:
-            frames[name] = pd.read_csv(RAW_DIR / filename, **read_csv_options)
+            frames[name] = pd.read_csv(source_dir / filename, **read_csv_options)
         except (OSError, UnicodeError, pd.errors.ParserError, pd.errors.EmptyDataError) as error:
             raise SystemExit(f"Could not read {filename}: {error}") from error
 

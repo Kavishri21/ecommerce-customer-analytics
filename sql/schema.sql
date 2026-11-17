@@ -1,6 +1,6 @@
 -- MySQL 8 star schema. Run after selecting the project database.
 
-CREATE TABLE dim_customers (
+CREATE TABLE IF NOT EXISTS dim_customers (
     customer_key INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     customer_id CHAR(32) NOT NULL UNIQUE,
     customer_unique_id CHAR(32) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE dim_customers (
     customer_state CHAR(2)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE dim_products (
+CREATE TABLE IF NOT EXISTS dim_products (
     product_key INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     product_id CHAR(32) NOT NULL UNIQUE,
     product_category_name VARCHAR(100),
@@ -17,7 +17,7 @@ CREATE TABLE dim_products (
     category_translation_status VARCHAR(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE dim_sellers (
+CREATE TABLE IF NOT EXISTS dim_sellers (
     seller_key INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     seller_id CHAR(32) NOT NULL UNIQUE,
     seller_zip_code_prefix CHAR(5),
@@ -25,13 +25,13 @@ CREATE TABLE dim_sellers (
     seller_state CHAR(2)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE dim_date (
+CREATE TABLE IF NOT EXISTS dim_date (
     full_date DATE PRIMARY KEY,
     calendar_year SMALLINT UNSIGNED NOT NULL,
     calendar_month TINYINT UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE fact_order_items (
+CREATE TABLE IF NOT EXISTS fact_order_items (
     order_id CHAR(32) NOT NULL,
     order_item_id SMALLINT UNSIGNED NOT NULL,
     customer_key INT UNSIGNED NOT NULL,
